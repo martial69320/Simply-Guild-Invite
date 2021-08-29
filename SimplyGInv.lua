@@ -58,39 +58,53 @@ table.insert( UnitPopupMenus["SELF"] ,1 , "GUILDINVITE" )
         local acc = C_BattleNet.GetFriendAccountInfo(BNGetSelectedFriend())
 		local game = acc.gameAccountInfo
         -- print(characterName)
-		characterName = game.characterName
-		serverName = game.realmName
+		selfFaction = UnitFactionGroup("player")
+		name = game.characterName
+		server = game.realmName
+		targetFaction = game.factionName
+		fullname = name.."-"..server;
+			if(selfFaction == targetFaction)
+			then
+				if ( server and ((not unit and GetNormalizedRealmName() ~= server) or (unit and UnitRealmRelationship(unit) ~= LE_REALM_RELATION_SAME) or (unit and UnitRealmRelationship(unit) ~= LE_REALM_RELATION_VIRTUAL)) ) then
+				fullname = name.."-"..server;
+				SendSystemMessage(fullname.."is in unlinked realm");
+				else
+				
+					if (UnitIsInMyGuild(fullname) == true) 
+					then
+						SendSystemMessage(name.." is in your guild");
+						PlaySound(810, Master, forceNoDuplicate);
 
+					elseif (unit and GetGuildInfo(unit) ~= nil) --< C'est cette fonction IsInGuild()
+					then
+						SendSystemMessage(name.."is in another guild");
+						PlaySound(810, Master, forceNoDuplicate);
 
-         if (UnitIsInMyGuild(characterName) == true) 
-        then
-          SendSystemMessage(characterName.."-"..serverName.." is in your guild");
-          PlaySound(810, Master, forceNoDuplicate);
+					else
+					-- local clubInfo = dropdownFrame.clubInfo;
+					-- local clubMemberInfo = dropdownFrame.clubMemberInfo;
+					-- print("Simply /ginvite",fullname);
 
-        elseif (unit and GetGuildInfo(unit) ~= nil) --< C'est cette fonction IsInGuild()
-          then
-            SendSystemMessage(characterName.."-"..serverName.."is in another guild");
-            PlaySound(810, Master, forceNoDuplicate);
+					--  GuildInvite(unit);
+					PlaySound(810, Master, forceNoDuplicate);
+					GuildInvite(fullname);
+				  end
+					
+				end
 
-          else
-            -- local clubInfo = dropdownFrame.clubInfo;
-            -- local clubMemberInfo = dropdownFrame.clubMemberInfo;
-            -- print("Simply /ginvite",fullname);
-
-            --  GuildInvite(unit);
-            
-           
-
-            PlaySound(810, Master, forceNoDuplicate);
-            GuildInvite(characterName.."-"..serverName);
-          end
-
-        --print("Close your friend frame");
-      end
+			--print("Close your friend frame");
+			else
+			
+				SendSystemMessage(name.." is in "..targetFaction.." on "..server);
+				PlaySound(810, Master, forceNoDuplicate);
+				
+				
+		  end
+	  
+	  else
 
       local dropdownFrame = UIDROPDOWNMENU_INIT_MENU;
       local unit = dropdownFrame.unit;
-      
 
       local name = dropdownFrame.name;
       local guild = GetGuildInfo(name);
@@ -103,34 +117,34 @@ table.insert( UnitPopupMenus["SELF"] ,1 , "GUILDINVITE" )
       --  GetUnitName("unit", showServerName) 
       -- UnitRealmRelationship("target")
       -- https://wowwiki.fandom.com/wiki/World_of_Warcraft_API
-      if ( server and ((not unit and GetNormalizedRealmName() ~= server) or (unit and UnitRealmRelationship(unit) ~= LE_REALM_RELATION_VIRTUAL)) ) then
-        fullname = name.."-"..server;
-      end
+      if ( server and ((not unit and GetNormalizedRealmName() ~= server) or (unit and UnitRealmRelationship(unit) ~= LE_REALM_RELATION_SAME) or (unit and UnitRealmRelationship(unit) ~= LE_REALM_RELATION_VIRTUAL)) ) then
+				fullname = name.."-"..server;
+				SendSystemMessage(fullname.."is in unlinked realm");
+				else
+					if (UnitIsInMyGuild(fullname) == true) 
+					then
+						SendSystemMessage(name.." is in your guild");
+						PlaySound(810, Master, forceNoDuplicate);
 
-      if (UnitIsInMyGuild(fullname) == true) 
-        then
-          
-          SendSystemMessage(fullname.." is in your guild");
-          PlaySound(810, Master, forceNoDuplicate);
+					elseif (unit and GetGuildInfo(unit) ~= nil) --< C'est cette fonction IsInGuild()
+					then
+						SendSystemMessage(name.."is in another guild");
+						PlaySound(810, Master, forceNoDuplicate);
 
-        elseif (unit and GetGuildInfo(unit) ~= nil) --< C'est cette fonction IsInGuild()
-          then
-            SendSystemMessage(fullname.." is in another guild");
-            PlaySound(810, Master, forceNoDuplicate);
+					else
+					-- local clubInfo = dropdownFrame.clubInfo;
+					-- local clubMemberInfo = dropdownFrame.clubMemberInfo;
+					-- print("Simply /ginvite",fullname);
 
-          else
-            -- local clubInfo = dropdownFrame.clubInfo;
-            -- local clubMemberInfo = dropdownFrame.clubMemberInfo;
-            -- print("Simply /ginvite",fullname);
-
-            --  GuildInvite(unit);
-            GuildInvite(fullname);
-            PlaySound(810, Master, forceNoDuplicate);
-           
-
-            PlaySound(888, Master, forceNoDuplicate);
-          end
+					--  GuildInvite(unit);
+					PlaySound(810, Master, forceNoDuplicate);
+					GuildInvite(fullname);
+				  end
+					
+				end
         end
+		
+		end
 
       end
 
