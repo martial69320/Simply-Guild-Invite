@@ -1,4 +1,4 @@
-# SimplyGInv
+# Simply Guild Invite
 --------------
 Simply Guild Invite adds a "Simply Guild Invite" popup in menu, to make it easier to add someone as a Guild member.
 ## Work with:
