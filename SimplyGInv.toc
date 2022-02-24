@@ -1,5 +1,5 @@
-## Interface: 90100
-## Version: 9.1
+## Interface: 90200
+## Version: 9.2.0.42423
 ## Title: Simply Guild Invite
 ## Description: Simply Guild Invite adds an "Simply Guild Invite" entry to popup menus, to make it easier to add someone as a Guild member.
 ## Description-frFR: Simply Guild Invite ajoute "Simply Guild Invite" dans les menus contextuels, pour faciliter l'ajout de quelqu'un en tant que membre de guilde.
