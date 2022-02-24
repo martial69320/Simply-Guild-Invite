@@ -3,14 +3,16 @@
 local SimplyGInv = CreateFrame("Frame","SimplyGInvFrame")
 SimplyGInv:SetScript("OnEvent", function() hooksecurefunc("UnitPopup_OnClick", SimplyGuildInvite) end)
 SimplyGInv:RegisterEvent("PLAYER_LOGIN")
-
+local addonName = ... ---@type string @The name of the addon.
+local ns = select(2, ...) ---@type ns @The addon namespace.
+local L = ns.L
 --old:  local PopupUnits = {"PARTY", "PLAYER", "RAID_PLAYER", "RAID", "FRIEND", "TEAM", "CHAT_ROSTER", "TARGET", "FOCUS", }
 --Test: local PopupUnits = {"SELF", }
 local PopupUnits = {}
 -- now all with "WHISPER" 
 
 
-UnitPopupButtons["GUILDINVITE"] = { text = "Simply Guild Invite", }
+UnitPopupButtons["GUILDINVITE"] = { text = L.BUTTON_TEXT, }
 
 table.insert( UnitPopupMenus["SELF"] ,1 , "GUILDINVITE" )
 
@@ -47,7 +49,7 @@ table.insert( UnitPopupMenus["SELF"] ,1 , "GUILDINVITE" )
 
   -- print ("SimplyGInv:PopupUnits:");
   -- print (PopupUnits);
-
+  
   function SimplyGuildInvite (self)
 
     local button = self.value;
@@ -62,41 +64,36 @@ table.insert( UnitPopupMenus["SELF"] ,1 , "GUILDINVITE" )
 		name = game.characterName
 		server = game.realmName
 		targetFaction = game.factionName
-		fullname = name.."-"..server;
 			if(selfFaction == targetFaction)
 			then
-				if ( server and ((not unit and GetNormalizedRealmName() ~= server) or (unit and UnitRealmRelationship(unit) ~= LE_REALM_RELATION_SAME) or (unit and UnitRealmRelationship(unit) ~= LE_REALM_RELATION_VIRTUAL)) ) then
-				fullname = name.."-"..server;
-				SendSystemMessage(fullname.."is in unlinked realm");
-				else
+      if (server and ((not unit and GetNormalizedRealmName() ~= server) or (unit and UnitRealmRelationship(name.."-"..server) ~= LE_REALM_RELATION_SAME) or (unit and UnitRealmRelationship(name.."-"..server) ~= LE_REALM_RELATION_VIRTUAL))) then
+				SendSystemMessage(name.."-"..server.." "..L.NOT_IN_REALM);
+						PlaySound(847, Master, forceNoDuplicate);
 				
-					if (UnitIsInMyGuild(fullname) == true) 
+					elseif (not unit and GetGuildInfo(unit) == nil) --< C'est cette fonction IsInGuild()
 					then
-						SendSystemMessage(name.." is in your guild");
-						PlaySound(810, Master, forceNoDuplicate);
+						SendSystemMessage(name.."-"..server.." "..L.IS_IN_OTHER_GUILD);
+						PlaySound(847, Master, forceNoDuplicate);
 
-					elseif (unit and GetGuildInfo(unit) ~= nil) --< C'est cette fonction IsInGuild()
-					then
-						SendSystemMessage(name.."is in another guild");
-						PlaySound(810, Master, forceNoDuplicate);
-
-					else
-					-- local clubInfo = dropdownFrame.clubInfo;
+						-- local clubInfo = dropdownFrame.clubInfo;
 					-- local clubMemberInfo = dropdownFrame.clubMemberInfo;
 					-- print("Simply /ginvite",fullname);
-
-					--  GuildInvite(unit);
-					PlaySound(810, Master, forceNoDuplicate);
-					GuildInvite(fullname);
-				  end
 					
-				end
-
+					--  GuildInvite(unit);
+					elseif (UnitRealmRelationship(unit) == LE_REALM_RELATION_SAME)
+					then
+					PlaySound(810, Master, forceNoDuplicate);
+					GuildInvite(name);
+					elseif(UnitRealmRelationship(unit) == LE_REALM_RELATION_VIRTUAL)
+					then
+					PlaySound(810, Master, forceNoDuplicate);
+					GuildInvite(name.."-"..server);
+end
 			--print("Close your friend frame");
 			else
 			
 				SendSystemMessage(name.." is in "..targetFaction.." on "..server);
-				PlaySound(810, Master, forceNoDuplicate);
+						PlaySound(847, Master, forceNoDuplicate);
 				
 				
 		  end
@@ -107,9 +104,9 @@ table.insert( UnitPopupMenus["SELF"] ,1 , "GUILDINVITE" )
       local unit = dropdownFrame.unit;
 
       local name = dropdownFrame.name;
+	  local selfFaction = UnitFactionGroup("player")
       local guild = GetGuildInfo(name);
       local server = dropdownFrame.server;
-      local fullname = name;
       -- https://wow.gamepedia.com/API_UnitRealmRelationship
       
       -- local realmRelation = UnitRealmRelationship(fullname) -------<
@@ -117,34 +114,33 @@ table.insert( UnitPopupMenus["SELF"] ,1 , "GUILDINVITE" )
       --  GetUnitName("unit", showServerName) 
       -- UnitRealmRelationship("target")
       -- https://wowwiki.fandom.com/wiki/World_of_Warcraft_API
-      if ( server and ((not unit and GetNormalizedRealmName() ~= server) or (unit and UnitRealmRelationship(unit) ~= LE_REALM_RELATION_SAME) or (unit and UnitRealmRelationship(unit) ~= LE_REALM_RELATION_VIRTUAL)) ) then
-				fullname = name.."-"..server;
-				SendSystemMessage(fullname.."is in unlinked realm");
-				else
-					if (UnitIsInMyGuild(fullname) == true) 
+      if (server and ((not unit and GetNormalizedRealmName() ~= server) or (not unit and not UnitRealmRelationship(name.."-"..server) == LE_REALM_RELATION_SAME) or (not unit and not UnitRealmRelationship(name.."-"..server) == LE_REALM_RELATION_VIRTUAL))) then
+				SendSystemMessage(name.."-"..server.." "..L.NOT_IN_REALM);
+						PlaySound(847, Master, forceNoDuplicate);
+				
+					elseif (not unit and GetGuildInfo(unit) == nil) --< C'est cette fonction IsInGuild()
 					then
-						SendSystemMessage(name.." is in your guild");
-						PlaySound(810, Master, forceNoDuplicate);
+						SendSystemMessage(name.."-"..server.." "..L.IS_IN_OTHER_GUILD);
+						PlaySound(847, Master, forceNoDuplicate);
 
-					elseif (unit and GetGuildInfo(unit) ~= nil) --< C'est cette fonction IsInGuild()
-					then
-						SendSystemMessage(name.."is in another guild");
-						PlaySound(810, Master, forceNoDuplicate);
-
-					else
-					-- local clubInfo = dropdownFrame.clubInfo;
+						-- local clubInfo = dropdownFrame.clubInfo;
 					-- local clubMemberInfo = dropdownFrame.clubMemberInfo;
 					-- print("Simply /ginvite",fullname);
-
+					
 					--  GuildInvite(unit);
+					elseif (UnitRealmRelationship(unit) == LE_REALM_RELATION_SAME)
+					then
 					PlaySound(810, Master, forceNoDuplicate);
-					GuildInvite(fullname);
+					GuildInvite(name);
+					elseif(UnitRealmRelationship(unit) == LE_REALM_RELATION_VIRTUAL)
+					then
+					PlaySound(810, Master, forceNoDuplicate);
+					GuildInvite(name.."-"..server);
+					
 				  end
 					
 				end
         end
-		
-		end
 
       end
 
